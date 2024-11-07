@@ -1,6 +1,7 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useRef } from "react";
+import { BiDownload } from "react-icons/bi";
 import {
   FaBookOpen,
   FaCalendarAlt,
@@ -69,16 +70,19 @@ const Itinerary = ({ data }: ItineraryProps) => {
 
   return (
     <div>
-      <button
-        onClick={downloadPDF}
-        className="bg-blue-500 text-white p-2 rounded-md mb-4"
-      >
-        Download Itinerary as PDF
-      </button>
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={downloadPDF}
+          className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition"
+        >
+          <BiDownload className="text-lg" />
+          Download Itinerary as PDF
+        </button>
+      </div>
 
       <div
         ref={itineraryRef}
-        className="mt-8 p-6 bg-indigo-200 rounded-lg shadow-md text-gray-800 space-y-6"
+        className="mt-3 p-6 bg-indigo-200 rounded-lg shadow-md text-gray-800 space-y-6"
       >
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold flex items-center justify-center">
