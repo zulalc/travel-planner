@@ -43,28 +43,49 @@ const interestIcons: Record<Interest, JSX.Element> = {
 };
 
 const Itinerary = ({ data }: ItineraryProps) => {
-  const itineraryRef = useRef(null);
+  const itineraryRef = useRef<HTMLDivElement | null>(null);
 
   const downloadPDF = async () => {
     const element = itineraryRef.current;
 
-    if (!element) {
-      console.log("Element not found");
-      return;
-    }
+    if (element && element instanceof HTMLElement) {
+      //element.style.visibility = "hidden"; // hide temporarily to avoid flickering on mobile
 
-    try {
-      const canvas = await html2canvas(element, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
+      const originalWidth = element.style.width; // saves current width for restoring later
+      element.style.width = "1024px";
 
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      try {
+        const canvas = await html2canvas(element, {
+          scale: 2,
+        });
+        const imgData = canvas.toDataURL("image/png");
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`${data.title}_Itinerary.pdf`);
-    } catch (error) {
-      console.log("Failed to generate PDF", error);
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const contentHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, contentHeight); // add first page
+
+        //for multiple page
+        let remainingHeight = contentHeight - pdfHeight;
+        let yOffset = -remainingHeight;
+
+        while (remainingHeight > 0) {
+          pdf.addPage(); // Add a new page
+          pdf.addImage(imgData, "PNG", 0, yOffset, pdfWidth, contentHeight);
+          remainingHeight -= pdfHeight;
+          yOffset -= pdfHeight;
+        }
+
+        pdf.save(`${data.title}_Itinerary.pdf`);
+      } catch (error) {
+        console.log("Failed to generate PDF", error);
+      }
+      element.style.width = originalWidth; // restore the width so it still looks right on the mobile phone
+      //element.style.visibility = "visible"; // show element after PDF generated
+    } else {
+      console.log("Element not found or is not an HTMLElement");
     }
   };
 
@@ -120,7 +141,9 @@ const Itinerary = ({ data }: ItineraryProps) => {
 
         <div className="space-y-4">
           <h3 className="text-xl font-semibold flex items-center">
-            <FaListUl className="mr-2" /> Daily Itinerary
+            <FaListUl className="mr-2 text-2xl" />{" "}
+            {/* Set a consistent size here */}
+            Daily Itinerary
           </h3>
           {data.days.map((day, dayIndex) => (
             <div key={dayIndex} className="border-t border-gray-300 pt-4">
@@ -133,7 +156,9 @@ const Itinerary = ({ data }: ItineraryProps) => {
                     key={activityIndex}
                     className="flex items-start space-x-2"
                   >
-                    <FaMapMarkerAlt className="text-indigo-500" />
+                    <span className="w-6 h-6 flex-shrink-0">
+                      <FaMapMarkerAlt className="text-indigo-500 w-4 h-4" />
+                    </span>
                     <span>
                       <strong>{activity.time}:</strong> {activity.description}
                     </span>
