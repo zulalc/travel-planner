@@ -163,7 +163,7 @@ const HomePage = () => {
                 id="startDate"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full border-gray-300 rounded-md shadow-sm p-3"
+                className="w-full border-blue-300 bg-white rounded-md shadow-sm p-3"
                 required
                 min={today}
               />
@@ -181,7 +181,7 @@ const HomePage = () => {
                 id="endDate"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full border-gray-300 rounded-md shadow-sm p-3"
+                className="w-full border-blue-300 bg-white rounded-md shadow-sm p-3"
                 required
                 min={startDate || today}
               />
