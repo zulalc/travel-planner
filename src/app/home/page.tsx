@@ -1,6 +1,6 @@
 "use client";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Itinerary, { ItineraryProps } from "@/app/(components)/Itinerary";
 import {
   FaCalendarAlt,
@@ -20,6 +20,14 @@ const HomePage = () => {
     null
   );
   const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY!;
+
+  const today = new Date().toISOString().split("T")[0];
+
+  useEffect(() => {
+    if (endDate && endDate < startDate) {
+      setEndDate("");
+    }
+  }, [startDate, endDate]);
 
   const handleInterestChange = (interest: string) => {
     setInterests((prev) =>
@@ -126,7 +134,7 @@ const HomePage = () => {
           Get Started
         </h2>
         <div className="mb-4 w-full">
-          <label htmlFor="destination" className="block-font-medium">
+          <label htmlFor="destination" className="font-medium">
             Destination
           </label>
           <div className="flex items-center">
@@ -145,7 +153,7 @@ const HomePage = () => {
 
         <div className="flex flex-col space-y-4 md:space-x-4 md:flex-row md:space-y-0">
           <div className="flex-1">
-            <label htmlFor="startDate" className="block font-medium">
+            <label htmlFor="startDate" className="font-medium">
               Start Date
             </label>
             <div className="flex items-center">
@@ -157,12 +165,13 @@ const HomePage = () => {
                 onChange={(e) => setStartDate(e.target.value)}
                 className="w-full border-gray-300 rounded-md shadow-sm p-3"
                 required
+                min={today}
               />
             </div>
           </div>
 
           <div className="flex-1">
-            <label htmlFor="endDate" className="block font-medium">
+            <label htmlFor="endDate" className="font-medium">
               End Date
             </label>
             <div className="flex items-center">
@@ -174,13 +183,14 @@ const HomePage = () => {
                 onChange={(e) => setEndDate(e.target.value)}
                 className="w-full border-gray-300 rounded-md shadow-sm p-3"
                 required
+                min={startDate || today}
               />
             </div>
           </div>
         </div>
 
         <div className="mb-4">
-          <label htmlFor="budget" className="block font-medium">
+          <label htmlFor="budget" className="font-medium">
             Budget($)
           </label>
           <div className="flex items-center">
@@ -199,7 +209,7 @@ const HomePage = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block font-medium mb-1">Interests</label>
+          <label className="font-medium mb-1">Interests</label>
           <div className="flex flex-wrap space-x-3">
             {["Adventure", "Relaxation", "Culture", "Food"].map((interest) => (
               <div key={interest} className="flex items-center">
