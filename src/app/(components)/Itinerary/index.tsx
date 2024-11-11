@@ -1,24 +1,43 @@
+"use client";
+
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BiDownload } from "react-icons/bi";
 import {
   FaBookOpen,
   FaCalendarAlt,
+  FaCloud,
+  FaCloudRain,
   FaHiking,
   FaListUl,
   FaMapMarkerAlt,
   FaMoneyBill,
   FaMoneyBillWave,
   FaPlaneDeparture,
+  FaSnowflake,
+  FaSun,
   FaUtensils,
 } from "react-icons/fa";
 import { LuCircleDollarSign } from "react-icons/lu";
 import { MdOutlineNotes } from "react-icons/md";
 import { TbCoffee } from "react-icons/tb";
+import { fetchWeather } from "@/app/services/weatherService";
+import { RiDrizzleFill, RiMistFill } from "react-icons/ri";
+import { IoThunderstorm } from "react-icons/io5";
+import { GiFog } from "react-icons/gi";
+import {
+  WiDayHaze,
+  WiDust,
+  WiSandstorm,
+  WiSmoke,
+  WiStrongWind,
+} from "react-icons/wi";
+import { FaTornado, FaVolcano } from "react-icons/fa6";
 
 export interface ItineraryProps {
   data: {
+    destination: string;
     title: string;
     dateRange: string;
     budget: string;
@@ -34,7 +53,6 @@ export interface ItineraryProps {
 }
 
 type Interest = "Adventure" | "Relaxation" | "Culture" | "Food";
-
 const interestIcons: Record<Interest, JSX.Element> = {
   Adventure: <FaHiking className="m-2" />,
   Relaxation: <TbCoffee className="m-2" />,
@@ -42,8 +60,63 @@ const interestIcons: Record<Interest, JSX.Element> = {
   Food: <FaUtensils className="m-2" />,
 };
 
+type Weather =
+  | "Clear"
+  | "Clouds"
+  | "Rain"
+  | "Drizzle"
+  | "Thunderstorm"
+  | "Snow"
+  | "Mist"
+  | "Smoke"
+  | "Haze"
+  | "Dust"
+  | "Fog"
+  | "Sand"
+  | "Ash"
+  | "Squall"
+  | "Tornado";
+
+const weatherIcons: Record<Weather, JSX.Element> = {
+  Clear: <FaSun className="m-2" />,
+  Clouds: <FaCloud className="m-2" />,
+  Rain: <FaCloudRain className="m-2" />,
+  Drizzle: <RiDrizzleFill className="m-2" />,
+  Thunderstorm: <IoThunderstorm className="m-2" />,
+  Snow: <FaSnowflake className="m-2" />,
+  Mist: <RiMistFill className="m-2" />,
+  Smoke: <WiSmoke className="m-2" />,
+  Haze: <WiDayHaze className="m-2" />,
+  Dust: <WiDust className="m-2" />,
+  Fog: <GiFog className="m-2" />,
+  Sand: <WiSandstorm className="m-2" />,
+  Ash: <FaVolcano className="m-2" />,
+  Squall: <WiStrongWind className="m-2" />,
+  Tornado: <FaTornado className="m-2" />,
+};
+
 const Itinerary = ({ data }: ItineraryProps) => {
   const itineraryRef = useRef<HTMLDivElement | null>(null);
+  const [weatherData, setWeatherData] = useState<any[]>([]);
+  const [loadingWeather, setLoadingWeather] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchWeatherForecast = async () => {
+      setLoadingWeather(true);
+      try {
+        const weatherForecast = await fetchWeather(
+          data.destination,
+          data.dateRange
+        );
+        console.log(weatherForecast, "weather");
+        setWeatherData(weatherForecast);
+      } catch (error) {
+        console.log(error);
+      }
+      setLoadingWeather(false);
+    };
+    fetchWeatherForecast();
+  }, [data.dateRange]);
 
   const downloadPDF = async () => {
     const element = itineraryRef.current;
@@ -141,15 +214,28 @@ const Itinerary = ({ data }: ItineraryProps) => {
 
         <div className="space-y-4">
           <h3 className="text-xl font-semibold flex items-center">
-            <FaListUl className="mr-2 text-2xl" />{" "}
-            {/* Set a consistent size here */}
+            <FaListUl className="mr-2 text-2xl" />
             Daily Itinerary
           </h3>
           {data.days.map((day, dayIndex) => (
             <div key={dayIndex} className="border-t border-gray-300 pt-4">
               <h4 className="text-lg font-semibold text-indigo-600">
-                {day.date}
+                {new Date(day.date).toLocaleDateString("en-GB")}
+
+                {weatherData[dayIndex] && weatherData[dayIndex].weather[0] && (
+                  <span className="flex items-center ml-4 text-gray-600">
+                    {/* Get the icon for the weather condition */}
+                    {weatherIcons[
+                      weatherData[dayIndex].weather[0]
+                        .main as keyof typeof weatherIcons
+                    ] || null}
+                    <span className="ml-2">
+                      {weatherData[dayIndex].weather[0].main}
+                    </span>
+                  </span>
+                )}
               </h4>
+
               <ul className="mt-2 space-y-2">
                 {day.activities.map((activity, activityIndex) => (
                   <li
@@ -159,6 +245,7 @@ const Itinerary = ({ data }: ItineraryProps) => {
                     <span className="w-6 h-6 flex-shrink-0">
                       <FaMapMarkerAlt className="text-indigo-500 w-4 h-4" />
                     </span>
+
                     <span>
                       <strong>{activity.time}:</strong> {activity.description}
                     </span>
