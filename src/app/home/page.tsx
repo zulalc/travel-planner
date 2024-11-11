@@ -55,7 +55,8 @@ const HomePage = () => {
       try {
         const result = await model.generateContent(
           `Following trip: ${requestData}. Please provide a detailed itinerary in a valid JSON format with the following structure: {
-          {
+          
+            "destination": "Your destination",
             "title": "Your Trip Title",
             "dateRange": "YYYY-MM-DD to YYYY-MM-DD",
             "budget": "Budget Amount",
@@ -81,9 +82,8 @@ const HomePage = () => {
               "Any important notes"
             ]
           }
-        }`
+        `
         );
-
         const itineraryJson = result.response.text();
         console.log("Raw itinerary response:", itineraryJson);
 
