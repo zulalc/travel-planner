@@ -49,7 +49,7 @@ export const fetchWeather = async (city: string, dateRange: string) => {
 
     // Step 3: Filter the data for each day within the range
     for (const date of dates) {
-      const dayData = response.data.list.filter((item: any) => {
+      const dayData = response.data.list.filter((item: DailyForecast) => {
         // Convert dt_txt to a Date object and only consider the date (ignoring time)
         const itemDate = new Date(item.dt_txt).toLocaleDateString();
         return itemDate === date.toLocaleDateString();
