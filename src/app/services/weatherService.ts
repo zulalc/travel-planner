@@ -6,7 +6,7 @@ const WEATHER_URL = "http://api.openweathermap.org/data/2.5/forecast";
 
 const getDatesBetween = (startDate: Date, endDate: Date) => {
   const dates = [];
-  let currentDate = new Date(startDate);
+  const currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
     dates.push(new Date(currentDate));
@@ -23,7 +23,7 @@ interface DailyForecast {
     min: number;
     max: number;
   };
-  weather: Array<{ description: string }>;
+  weather: Array<{ main: string }>;
 }
 
 export const fetchWeather = async (city: string, dateRange: string) => {
@@ -51,7 +51,7 @@ export const fetchWeather = async (city: string, dateRange: string) => {
     const response = await axios.get(url);
 
     // Step 3: Filter the data for each day within the range
-    for (let date of dates) {
+    for (const date of dates) {
       const dayData = response.data.list.filter((item: any) => {
         // Convert dt_txt to a Date object and only consider the date (ignoring time)
         const itemDate = new Date(item.dt_txt).toLocaleDateString();

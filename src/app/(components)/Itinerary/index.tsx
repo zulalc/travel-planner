@@ -52,6 +52,16 @@ export interface ItineraryProps {
   };
 }
 
+interface WeatherProps {
+  dt: number;
+  temp: {
+    day: number;
+    min: number;
+    max: number;
+  };
+  weather: Array<{ main: string }>;
+}
+
 type Interest = "Adventure" | "Relaxation" | "Culture" | "Food";
 const interestIcons: Record<Interest, JSX.Element> = {
   Adventure: <FaHiking className="m-2" />,
@@ -76,7 +86,6 @@ type Weather =
   | "Ash"
   | "Squall"
   | "Tornado";
-
 const weatherIcons: Record<Weather, JSX.Element> = {
   Clear: <FaSun className="m-2" />,
   Clouds: <FaCloud className="m-2" />,
@@ -97,9 +106,8 @@ const weatherIcons: Record<Weather, JSX.Element> = {
 
 const Itinerary = ({ data }: ItineraryProps) => {
   const itineraryRef = useRef<HTMLDivElement | null>(null);
-  const [weatherData, setWeatherData] = useState<any[]>([]);
+  const [weatherData, setWeatherData] = useState<WeatherProps[]>([]);
   const [loadingWeather, setLoadingWeather] = useState<boolean>(false);
-
   useEffect(() => {
     const fetchWeatherForecast = async () => {
       setLoadingWeather(true);
@@ -116,7 +124,7 @@ const Itinerary = ({ data }: ItineraryProps) => {
       setLoadingWeather(false);
     };
     fetchWeatherForecast();
-  }, [data.dateRange]);
+  }, [data.dateRange, data.destination]);
 
   const downloadPDF = async () => {
     const element = itineraryRef.current;
@@ -164,6 +172,7 @@ const Itinerary = ({ data }: ItineraryProps) => {
 
   return (
     <div>
+      {loadingWeather && <p>Loading weather data...</p>}
       <div className="flex justify-center mt-4">
         <button
           onClick={downloadPDF}

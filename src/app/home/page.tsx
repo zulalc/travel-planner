@@ -95,6 +95,7 @@ const HomePage = () => {
         attempts += 1;
         if (attempts >= MAX_RETRIES) {
           console.error("Max retries reached, giving up.");
+          setLoading(false);
         }
       }
     }
