@@ -18,12 +18,9 @@ const getDatesBetween = (startDate: Date, endDate: Date) => {
 
 interface DailyForecast {
   dt: number;
-  temp: {
-    day: number;
-    min: number;
-    max: number;
-  };
-  weather: Array<{ main: string }>;
+  dt_txt: string;
+  main: { temp: number; temp_min: number; temp_max: number };
+  weather: Array<{ main: string; description: string; icon: string }>;
 }
 
 export const fetchWeather = async (city: string, dateRange: string) => {

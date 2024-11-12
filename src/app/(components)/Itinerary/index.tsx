@@ -54,12 +54,9 @@ export interface ItineraryProps {
 
 interface WeatherProps {
   dt: number;
-  temp: {
-    day: number;
-    min: number;
-    max: number;
-  };
-  weather: Array<{ main: string }>;
+  dt_txt: string;
+  main: { temp: number; temp_min: number; temp_max: number };
+  weather: Array<{ main: string; description: string; icon: string }>;
 }
 
 type Interest = "Adventure" | "Relaxation" | "Culture" | "Food";
@@ -239,7 +236,11 @@ const Itinerary = ({ data }: ItineraryProps) => {
                         .main as keyof typeof weatherIcons
                     ] || null}
                     <span className="ml-2">
-                      {weatherData[dayIndex].weather[0].main}
+                      {weatherData[dayIndex].weather[0].main}{" "}
+                    </span>
+
+                    <span className="ml-2 text-gray-700">
+                      {weatherData[dayIndex].main.temp} °C
                     </span>
                   </span>
                 )}
