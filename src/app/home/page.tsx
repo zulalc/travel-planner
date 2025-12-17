@@ -42,7 +42,7 @@ const HomePage = () => {
     setLoading(true);
 
     const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const requestData = `Destination: ${destination}, Start Date: ${startDate}, End Date: ${endDate}, Budget: ${budget}, Interests: ${interests?.join(
       ", "
     )}. Please provide the itinerary in plain JSON format without any backticks or additional formatting.`;
