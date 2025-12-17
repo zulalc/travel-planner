@@ -60,7 +60,7 @@ interface WeatherProps {
 }
 
 type Interest = "Adventure" | "Relaxation" | "Culture" | "Food";
-const interestIcons: Record<Interest, JSX.Element> = {
+const interestIcons: Record<Interest, React.ReactElement> = {
   Adventure: <FaHiking className="m-2" />,
   Relaxation: <TbCoffee className="m-2" />,
   Culture: <FaBookOpen className="m-2" />,
@@ -83,7 +83,7 @@ type Weather =
   | "Ash"
   | "Squall"
   | "Tornado";
-const weatherIcons: Record<Weather, JSX.Element> = {
+const weatherIcons: Record<Weather, React.ReactElement> = {
   Clear: <FaSun className="m-2" />,
   Clouds: <FaCloud className="m-2" />,
   Rain: <FaCloudRain className="m-2" />,
@@ -299,3 +299,4 @@ const Itinerary = ({ data }: ItineraryProps) => {
 };
 
 export default Itinerary;
+
